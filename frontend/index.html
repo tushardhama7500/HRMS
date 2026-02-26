@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HRMS Lite | Professional HR Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #4338ca;
+            --bg: #f3f4f6;
+            --card: #ffffff;
+            --text: #111827;
+            --text-light: #6b7280;
+            --border: #e5e7eb;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+        
+        * { box-sizing: border-box; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: var(--bg); 
+            color: var(--text); 
+            margin: 0; 
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        .container { max-width: 1100px; margin: 0 auto; width: 100%; padding: 0 1.5rem; }
+        
+        /* Header & Footer Styles */
+        nav, footer { 
+            background: var(--card); 
+            border-bottom: 1px solid var(--border); 
+            padding: 1rem 0;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        footer { 
+            margin-top: auto; 
+            border-bottom: none; 
+            border-top: 1px solid var(--border); 
+            color: var(--text-light);
+            text-align: center;
+        }
+        
+        .nav-content, .footer-content { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        
+        .logo { font-weight: 700; font-size: 1.25rem; color: var(--primary); text-decoration: none; }
+        
+        .btn-group { display: flex; gap: 0.75rem; }
+
+        /* Main Content */
+        main { padding: 3rem 0; flex: 1; }
+        
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        h1 { margin: 0; font-size: 1.875rem; font-weight: 700; }
+        
+        .card { 
+            background: var(--card); 
+            border-radius: 12px; 
+            border: 1px solid var(--border); 
+            padding: 1.5rem; 
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); 
+        }
+        
+        table { width: 100%; border-collapse: collapse; }
+        th, td { text-align: left; padding: 1rem; border-bottom: 1px solid var(--border); }
+        th { color: var(--text-light); font-weight: 600; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; background: #fafafa; }
+        
+        /* Buttons */
+        .btn { 
+            padding: 0.625rem 1.25rem; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            border: 1px solid transparent; 
+            font-weight: 500; 
+            font-size: 0.875rem;
+            transition: all 0.2s; 
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-outline { background: white; border-color: var(--border); color: var(--text); }
+        .btn-outline:hover { background: #f9fafb; border-color: #d1d5db; }
+        .btn-danger { color: var(--danger); }
+        .btn-sm { padding: 0.4rem 0.75rem; font-size: 0.8rem; }
+
+        /* Modal */
+        .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); }
+        .modal-content { background: white; padding: 2.5rem; border-radius: 16px; width: 450px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
+        .form-group { margin-bottom: 1.25rem; }
+        label { display: block; margin-bottom: 0.5rem; font-weight: 500; font-size: 0.875rem; color: #374151; }
+        input, select { width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 8px; font-size: 0.875rem; transition: border-color 0.2s; }
+        input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2); }
+        
+        .pagination { margin-top: 1.5rem; display: flex; gap: 0.5rem; align-items: center; justify-content: flex-end; }
+        .hidden { display: none; }
+        .status-badge { padding: 0.25rem 0.5rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; }
+        .status-present { background: #dcfce7; color: #166534; }
+        .status-absent { background: #fee2e2; color: #991b1b; }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <nav>
+        <div class="container nav-content">
+            <a href="#" class="logo" onclick="showSection('dashboard')">HRMS Lite</a>
+            <div class="btn-group">
+                <button class="btn btn-outline" onclick="showSection('dashboard')">Home</button>
+                <button class="btn btn-primary" onclick="showModal('employeeModal')">Add Employee</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <!-- Dashboard Section -->
+        <div id="section-dashboard">
+            <div class="section-header">
+                <h1>Employee Directory</h1>
+                <div style="font-size: 0.875rem; color: var(--text-light)" id="total-count-label">Loading...</div>
+            </div>
+            <div class="card">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Employee ID</th>
+                            <th>Full Name</th>
+                            <th>Department</th>
+                            <th style="text-align: right;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="employee-list"></tbody>
+                </table>
+                <div class="pagination" id="pagination-controls"></div>
+            </div>
+        </div>
+
+        <!-- Attendance Section -->
+        <div id="section-attendance" class="hidden">
+            <div class="section-header">
+                <div>
+                    <h1 id="attendance-title">Attendance Records</h1>
+                    <p id="attendance-subtitle" style="color: var(--text-light); margin-top: 0.5rem;"></p>
+                </div>
+                <button class="btn btn-outline" onclick="showSection('dashboard')">← Back to List</button>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 2rem;">
+                <div class="card">
+                    <h3 style="margin-top: 0;">Mark Attendance</h3>
+                    <form id="attendanceForm">
+                        <div class="form-group">
+                            <label>Date</label>
+                            <input type="date" id="att-date" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select id="att-status">
+                                <option value="Present">Present</option>
+                                <option value="Absent">Absent</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">Save Record</button>
+                    </form>
+                </div>
+                <div class="card">
+                    <h3 style="margin-top: 0;">Recent Logs</h3>
+                    <table>
+                        <thead>
+                            <tr><th>Date</th><th>Status</th></tr>
+                        </thead>
+                        <tbody id="attendance-history"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container footer-content">
+            <div>© 2026 HRMS Lite Backend System</div>
+            <div class="btn-group">
+                <button class="btn btn-sm btn-outline" onclick="showSection('dashboard')">Home</button>
+                <button class="btn btn-sm btn-outline" onclick="showModal('employeeModal')">Add New</button>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Add Employee Modal -->
+    <div id="employeeModal" class="modal">
+        <div class="modal-content">
+            <h2 style="margin-top: 0;">Add New Employee</h2>
+            <form id="employeeForm">
+                <div class="form-group"><label>Employee ID</label><input id="emp-id" placeholder="e.g. EMP101" required></div>
+                <div class="form-group"><label>Full Name</label><input id="emp-name" placeholder="John Doe" required></div>
+                <div class="form-group"><label>Email Address</label><input type="email" id="emp-email" placeholder="john@company.com" required></div>
+                <div class="form-group"><label>Department</label><input id="emp-dept" placeholder="Engineering" required></div>
+                <div style="display: flex; gap: 0.75rem; margin-top: 2rem;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">Create Profile</button>
+                    <button type="button" class="btn btn-outline" onclick="hideModal('employeeModal')" style="flex: 1;">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let currentPage = 1;
+        window.currentEmpId = null;
+
+        async function api(path, method = 'GET', body = null) {
+            const options = { method, headers: { 'Content-Type': 'application/json' } };
+            if (body) options.body = JSON.stringify(body);
+            const res = await fetch(path, options);
+            if (res.status === 204) return null;
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Operation failed');
+            return data;
+        }
+
+        async function loadEmployees(page = 1) {
+            try {
+                const response = await api(`/api/employees/?page=${page}`);
+                currentPage = response.current_page;
+                
+                document.getElementById('total-count-label').innerText = `Total Employees: ${response.total_count}`;
+                
+                const list = document.getElementById('employee-list');
+                list.innerHTML = response.data.map(e => `
+                    <tr>
+                        <td><strong>${e.employee_id}</strong></td>
+                        <td>${e.full_name}</td>
+                        <td>${e.department}</td>
+                        <td style="text-align: right;">
+                            <button class="btn btn-sm btn-outline" style="color:var(--primary)" onclick="viewAttendance(${e.id})">Attendance</button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteEmployee(${e.id})">Delete</button>
+                        </td>
+                    </tr>
+                `).join('');
+
+                renderPagination(response);
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function renderPagination(data) {
+            const controls = document.getElementById('pagination-controls');
+            if (data.total_pages <= 1) {
+                controls.innerHTML = '';
+                return;
+            }
+            controls.innerHTML = `
+                <button class="btn btn-sm btn-outline" ${!data.has_previous ? 'disabled' : ''} onclick="loadEmployees(${data.current_page - 1})">Previous</button>
+                <span style="font-size: 0.875rem; margin: 0 0.5rem;">Page ${data.current_page} of ${data.total_pages}</span>
+                <button class="btn btn-sm btn-outline" ${!data.has_next ? 'disabled' : ''} onclick="loadEmployees(${data.current_page + 1})">Next</button>
+            `;
+        }
+
+        async function deleteEmployee(id) {
+            if (confirm('Are you sure you want to delete this employee?')) { 
+                try {
+                    await api(`/api/employees/${id}/`, 'DELETE'); 
+                    loadEmployees(currentPage); 
+                } catch(err) { alert(err.message); }
+            }
+        }
+
+        async function viewAttendance(id) {
+            try {
+                const emp = await api(`/api/employees/${id}/`);
+                window.currentEmpId = id;
+                document.getElementById('attendance-title').innerText = `Attendance: ${emp.full_name}`;
+                document.getElementById('attendance-subtitle').innerText = `${emp.employee_id} • ${emp.department}`;
+                
+                const history = document.getElementById('attendance-history');
+                history.innerHTML = emp.attendances.map(a => `
+                    <tr>
+                        <td>${a.date}</td>
+                        <td><span class="status-badge status-${a.status.toLowerCase()}">${a.status}</span></td>
+                    </tr>
+                `).join('') || '<tr><td colspan="2" style="text-align:center; padding: 2rem;">No attendance records found for this employee.</td></tr>';
+                
+                showSection('attendance');
+            } catch(err) { alert(err.message); }
+        }
+
+        document.getElementById('employeeForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const data = {
+                employee_id: document.getElementById('emp-id').value,
+                full_name: document.getElementById('emp-name').value,
+                email: document.getElementById('emp-email').value,
+                department: document.getElementById('emp-dept').value
+            };
+            try {
+                await api('/api/employees/', 'POST', data);
+                hideModal('employeeModal');
+                loadEmployees(1);
+                e.target.reset();
+            } catch(err) { alert(err.message); }
+        };
+
+        document.getElementById('attendanceForm').onsubmit = async (e) => {
+            e.preventDefault();
+            try {
+                await api('/api/attendance/', 'POST', {
+                    employee: window.currentEmpId,
+                    date: document.getElementById('att-date').value,
+                    status: document.getElementById('att-status').value
+                });
+                viewAttendance(window.currentEmpId);
+            } catch(err) { alert(err.message); }
+        };
+
+        function showSection(id) {
+            document.getElementById('section-dashboard').classList.toggle('hidden', id !== 'dashboard');
+            document.getElementById('section-attendance').classList.toggle('hidden', id !== 'attendance');
+            window.scrollTo(0, 0);
+        }
+        
+        function showModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function hideModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        // Initialize
+        document.getElementById('att-date').valueAsDate = new Date();
+        loadEmployees();
+    </script>
+</body>
+</html>
