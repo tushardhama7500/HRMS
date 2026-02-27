@@ -36,7 +36,7 @@ pip install django django-cors-headers
 python manage.py runserver
 ```
 
-_The API will be available at: http://localhost:8000_
+_The API will be available at: https://hrms-vzth.onrender.com
 
 ### 2. Frontend Setup (React)
 
@@ -50,7 +50,7 @@ npm install
 npm run dev
 ```
 
-_The UI will be available at: http://localhost:5174_
+_The UI will be available at: https://hrms-frontend-tk07.onrender.com/
 
 ---
 
